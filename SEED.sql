@@ -1,0 +1,9 @@
+INSERT INTO devices (name, lat, lon) values ('estg-device', 39.26851, -7.44424);
+INSERT INTO devices (name, lat, lon) values ('portalegre-sao-mamede-peak-device', 39.31349, -7.36055);
+INSERT INTO devices (name, lat, lon) values ('lisbon-device', 38.744, -9.1581);
+INSERT INTO devices (name, lat, lon) values ('paris-device', 48.8589, 2.3469);
+INSERT INTO devices (name, lat, lon) values ('berlin-device', 52.5072, 13.4248);
+INSERT INTO devices (name, lat, lon) values ('warsaw-device', 52.2332, 21.0614);
+INSERT INTO devices (name, lat, lon) values ('kyiv-device', 50.4024, 30.5313);
+INSERT INTO devices (name, lat, lon) values ('moscow-device', 55.7252, 37.629);
+INSERT INTO devices (name, lat, lon) values ('seoul-device', 37.5651, 126.9741);

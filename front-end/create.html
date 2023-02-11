@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Creating Device | Temperature Reading Devices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-200">
+  <nav class="shadow bg-gray-800">
+    <div class="container flex items-center justify-between py-6 mx-auto capitalize text-gray-300">
+        <div>
+          <a href="./" class="text-gray-200 text-4xl font-semibold">Home</a>
+        </div>
+
+        <div>
+          <a href="javascript:history.back()" class="text-gray-200 text-4xl font-semibold mr-10"><span>Go back</span></a>
+          <a href="./create.html" class="text-gray-200 border-b-2 border-blue-500 text-gray-200 text-4xl font-semibold">Create</a>
+        </div>
+    </div>
+  </nav>
+
+  <form class="bg-slate-800 w-60 mx-auto mt-12 rounded-lg py-6 flex flex-col items-center">
+    <div>
+      <label class="block font-bold text-xl">Name</label>
+      <input id="name" type="text" class="text-slate-800" placeholder="Device Name"/>
+    </div>
+    
+    <div>
+      <label class="block mt-5 font-bold text-xl">Latitude</label>
+      <input id="latitude" type="text" class="text-slate-800" placeholder="Device Latitude"/>
+    </div>
+
+    <div>
+      <label class="block mt-5 font-bold text-xl">Longitude</label>
+    <input id="longitude" type="text" class="text-slate-800" placeholder="Device Longitude"/>
+    </div>
+
+    <button 
+      class="mt-4 block bg-blue-500 px-4 py-2 border border-slate-700 rounded-lg" 
+      id="create-button" type="button"
+    >
+      Submit
+    </button>
+  </form>
+
+  <script>
+      $("#create-button").click(function () {
+          let device_name = $("#name").val()
+          let device_lat = $("#latitude").val()
+          let device_lon = $("#longitude").val()
+
+          $.ajax({
+              url: "http://localhost:5000/devices",
+              method: "POST",
+              data: JSON.stringify({
+                  "name": device_name,
+                  "lat": device_lat,
+                  "lon": device_lon
+              }),
+              contentType:"application/json",
+              success: function() {
+                  let url = "./index.html"
+                  window.location.href = url;
+              }
+          })
+      })
+  </script>
+</body>
+</html>

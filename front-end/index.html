@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Home | Temperature Reading Devices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+
+<body class="bg-gray-900 text-gray-200">
+    <nav class="shadow bg-gray-800">
+        <div class="container flex items-center justify-between py-6 mx-auto capitalize text-gray-300">
+            <a href="./" class="text-gray-200 text-4xl font-semibold border-b-2 border-blue-500">Home</a>
+
+            <div>
+                <a href="./create.html" class="text-gray-200 text-4xl font-semibold">Create</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto my-12">
+        <table id="devices" class="table-auto border-collapse border border-slate-500 w-1/2 mx-auto text-center">
+            <thead>
+                <tr class="bg-slate-800">
+                    <th class="border border-slate-600 text-xl" colspan="7">
+                        <span>Devices</span>
+
+                        <a href="./create.html">
+                            <span></span>
+                        </a>
+                    </th>
+                </tr>
+
+                <tr>
+                    <th class="border border-slate-600 text-xl">
+                        <span>ID</span>
+                    </th>
+                    <th class="border border-slate-600 text-xl">
+                        <span>Name</span>
+                    </th>
+                    <th class="border border-slate-600 text-xl">
+                        <span>Latitude</span>
+                    </th>
+                    <th class="border border-slate-600 text-xl">
+                        <span>Longitude</span>
+                    </th>
+                    <th colspan="3" class="border border-slate-600 text-xl">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        function goToUpdate(id) {
+            let url = `./update.html?id=${id}`
+            window.location.href = url;
+        }
+        function deleteDevice(id) {
+            let url = "./index.html"
+
+            $.ajax({
+                url: `http://localhost:5000/devices/${id}`,
+                method: "DELETE",
+                success: function() {
+                    window.location.href = url
+                }
+            })
+        }
+
+        function goToViewDevice (id) {
+            let url = `./view.html?id=${id}`
+            window.location.href = url;
+        }
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "http://localhost:5000/devices",
+                method: "GET",
+                success: function(devices) {
+                    const numberOfDevices = devices.length
+
+                    $("#devices").find("tbody").empty()
+
+                    for(let i=0; i<numberOfDevices; i++) {
+                        const row = `
+                            <tr table-row table-thead>
+                                <td id="${devices[i].id}" class="border border-slate-700 font-bold">
+                                    ${devices[i].id}
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                ${devices[i].name}
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                ${devices[i].lat}
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                ${devices[i].lon}
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                    <button onclick="goToUpdate(${devices[i].id})">
+                                        <span>Update</span>
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                    <button onclick="deleteDevice(${devices[i].id})">
+                                        <span>Delete</span>
+                                        <span></span>
+                                    </button>
+                                </td>
+                                <td class="border border-slate-700 font-bold">
+                                    <button onclick="goToViewDevice(${devices[i].id})">
+                                        <span>View</span>
+                                        <span></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        `
+
+                        $("#devices").find("tbody").append(row)
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>

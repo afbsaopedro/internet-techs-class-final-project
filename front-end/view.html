@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Viewing Device | Temperature Reading Devices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <nav class="shadow bg-gray-800">
+        <div class="container flex items-center justify-between py-6 mx-auto capitalize text-gray-300">
+            <a href="./" class="text-gray-200 text-4xl font-semibold">Home</a>
+
+            <div>
+                <a href="javascript:history.back()" class="text-gray-200 text-4xl font-semibold mr-10"><span>Go back</span></a>
+                <a href="./create.html" class="text-gray-200 text-4xl font-semibold">Create</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-12">
+        <table id="device" class="table-auto border-collapse border border-slate-500 w-1/2 mx-auto text-center">
+            <thead>
+                <tr class="bg-slate-800">
+                    <th class="border border-slate-600 text-xl"><span>ID</span></th>
+                    <th class="border border-slate-600 text-xl"><span>Name</span></th>
+                    <th class="border border-slate-600 text-xl"><span>Latitude</span></th>
+                    <th class="border border-slate-600 text-xl"><span>Longitude</span></th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="container mx-auto mt-12">
+        <div class="border border-slate-500 border-4 mx-auto" style="width: 1200px; height:600px;">
+            <div id="mapdiv" style="width: 1200px; height: 600px; margin-inline: auto !important; display: inline;"></div>
+        </div>
+    </div>
+
+    <div class="container mx-auto my-12">
+        <table id="readings" class="table-auto border-collapse border border-slate-500 w-1/2 mx-auto text-center">
+            <thead>
+                <tr class="bg-slate-800">
+                    <th class="border border-slate-600 text-xl" colspan="2"><span>Readings</th>
+                </tr>
+            </thead>
+
+            <thead>
+                <tr class="bg-slate-800">
+                    <th class="border border-slate-600 text-lg">Date</th>
+                    <th class="border border-slate-600 text-lg">Temperature</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        let mapLat = 0;
+        let mapLon = 0;
+        let mapLink = `https://www.openstreetmap.org/export/embed.html?bbox=-31.970214843750004%2C282C28.091366281406945%2C11.09619140625%2C49.081062364320736&amp;layer=mapnik`
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            $.ajax({
+                url: `http://localhost:5000/devices/${id}`,
+                method: "GET",
+                success: function(device) {
+                    $("#device").find("tbody").empty()
+
+                    const row = `
+                        <tr>
+                            <td id="${device.id}" class="border border-slate-700 font-bold">
+                                ${device.id}
+                            </td>
+                            <td class="border border-slate-700 font-bold">
+                            ${device.name}
+                            </td>
+                            <td class="border border-slate-700 font-bold">
+                            ${device.lat}
+                            </td>
+                            <td class="border border-slate-700 font-bold">
+                            ${device.lon}
+                            </td>
+                        </tr>
+                    `
+
+                    $("#device").find("tbody").append(row)
+                    // map map map map map map map
+                    map = new OpenLayers.Map("mapdiv");
+                    map.addLayer(new OpenLayers.Layer.OSM());
+
+                    var zoom = 6;
+                    var lonLat = new OpenLayers.LonLat(device.lon, device.lat)
+                    .transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        map.getProjectionObject()
+                    );
+
+                    var markers = new OpenLayers.Layer.Markers("Markers");
+                    map.addLayer(markers);
+
+                    markers.addMarker(new OpenLayers.Marker(lonLat));
+
+                    map.setCenter(lonLat, zoom);
+                }
+            })
+
+            $.ajax({
+                url: `http://localhost:5000/devices/${id}/readings`,
+                method: "GET",
+                success: function(readings) {
+                    $("#readings").find("tbody").empty()
+                    for (let i = 0; i < readings.length; i++) {
+                        const row = `
+                            <tr>
+                                <td class="border border-slate-700 font-semibold">
+                                    ${new Date(readings[i].date).toLocaleDateString("pt-PT")} ${new Date(readings[i].date).toLocaleTimeString("pt-PT")}
+                                </td>
+                                <td class="border border-slate-700 font-semibold">
+                                    ${readings[i].value}°C
+                                </td>
+                            </tr>
+                        `
+
+                        $("#readings").find("tbody").append(row)
+                    }
+                    
+                    
+                }
+            })
+        })
+    </script>
+</body>
+</html>

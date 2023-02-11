@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Updating Device | Temperature Reading Devices</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <nav class="shadow bg-gray-800">
+        <div class="container flex items-center justify-between py-6 mx-auto capitalize text-gray-300">
+            <a href="./" class="text-gray-200 text-4xl font-semibold">Home</a>
+
+            <div>
+                <a href="javascript:history.back()" class="text-gray-200 text-4xl font-semibold mr-10"><span>Go back</span></a>
+                <a href="./create.html" class="text-gray-200 text-4xl font-semibold">Create</a>
+            </div>
+        </div>
+    </nav>
+
+<form class="bg-slate-800 w-60 mx-auto mt-12 rounded-lg py-6 flex flex-col items-center">
+    <div>
+      <label class="block font-bold text-xl">Name</label>
+      <input id="name" type="text" class="text-slate-800" placeholder="Device Name"/>
+    </div>
+
+    <button class="mt-4 block bg-blue-500 px-4 py-2 border border-slate-700 rounded-lg" id="update-button" type="button">Save Changes</button>
+  </form>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const device_id = urlParams.get('id');
+
+    $(document).ready(function() {
+        $.ajax({
+            url: `http://localhost:5000/devices/${device_id}`,
+            method: "GET",
+            success: function(device) {
+                $("#name").val(device.name)
+                $("#latitude").val(device.lat)
+                $("#longitude").val(device.lon)
+            }
+        })
+    })
+
+    $("#update-button").click(function () {
+        let device_name = $("#name").val()
+        let device_lat = $("#latitude").val()
+        let device_lon = $("#longitude").val()
+
+        $.ajax({
+            url: `http://localhost:5000/devices/${device_id}`,
+            method: "PUT",
+            data: JSON.stringify({
+                "name": device_name,
+                "lat": device_lat,
+                "lon": device_lon,
+                "id": device_id
+            }),
+            contentType:"application/json",
+            success: function() {
+                let goHome = "./index.html"
+                window.location.href = goHome;
+            }
+        })
+    })
+</script>
+</body>
+</html>
